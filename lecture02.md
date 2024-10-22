@@ -21,7 +21,7 @@ stack.pop()
 print(stack[-1]) # Peek
 def isEmpty():
   return len(stack) ==0
-
+```
 ## 02 linked list를 구현하시오.
 - 필수 구현 메서드는 다음과 같음
 
