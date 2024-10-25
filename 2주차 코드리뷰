@@ -1,1 +1,62 @@
+## 1단계) 문제 분석
 
+
+
+
+1. 시간복잡도
+
+    " S의 길이는 100,000 이하이다." 라고 했기 때문에 1초 이내에 풀어야 한다면 O(nlogn)이하의 시간 복잡도가 걸리는 알고리즘으로 문제를 풀어야 한다. 
+
+
+
+2. 제약 조건 분석
+   
+    입력 조건에 s의 길이를 100.000이하로 적는다.
+    출력은 "첫째 줄에 문자열 S의 단어를 뒤집어서 출력한다."의 조건을 만족시킨다.
+    태그는 단어가 아니기 때문에 순서가 바뀌지 않는다.
+    
+
+## 2단계) 접근 방식
+
+1. 생각 과정 설명(왜 이 자료구조/알고리즘을 선택했고, 어떻게 해결방법을 생각하게 되었는지 생각이 도달하는 과정을 설명)
+
+   
+    처음에는 스택이라는 자료구조를 이용해서 문제를 풀었다 그래서 append를 이용해서 문자열이 들어있는 리스트에 삽입한 후 특정 조건에 도달하면 그 앞에 있는 문자열들의 순서를 바꿔주는 형식으로 문제를 풀었다.
+    그러나 스택이라는 자료구조 하나만으로는 문제를 풀기가 어려워서 단순하게 생각하기 위해 '문자열의 순서를 바꾸는 문제'로 풀기로 하고 특정 조건을 만족하면 그 앞의 순서를 바꿔주고
+    아니면 그냥 순서를 바꾸지 않고 그대로 넣는 것으로 했다.   
+
+## 3단계) 코드 설계
+```python
+def reverse_word(user_input):
+    word = []  # 순서가 바뀌는 것들
+    result = []
+    is_stop = False  # 순서가 바뀔 수 없음을 예고
+
+    for selection in user_input:
+        if selection == "<":
+            if word:  # word에 어떤 수가 있음을 알려줌
+                result.append(''.join(word[::-1]))  # selection에 있는 문자가 실행되기 전에 앞에 있는 문자들의 순서를 바꿔준다.
+                word = []  # result에 보낸 뒤 그 문자 리스트를 비워준다.
+            result.append(selection)  # 그다음 selection을 result에 추가해준다.
+            is_stop = True  # 순서가 바뀔 수 없음 "<" 나왔기 때문
+        elif selection == ">":
+            result.append(selection)
+            is_stop = False  # 순서가 바뀔 수 있음
+        elif selection == " ":
+            if word:
+                result.append(''.join(word[::-1]))
+                word = []
+            result.append(selection)  # 공백도 추가가 가능하다. 공백 또한 하나의 기준이 될 수 있다.
+        elif not is_stop:  # 순서가 바뀔 수 있는 경우
+            word.append(selection)  # 순서를 바꿀 수 있는 리스트에 추가
+        else:
+            result.append(selection)  # "<"가 나온 뒤 ">" 표시가 아직 나오지 않은 경우에 순서를 바꿀 수 없을 때 result에 바로 추가한다.
+
+    if word:
+        result.append(''.join(word[::-1]))
+
+    result2 = ''.join(result)
+    return result2
+
+a = input()
+print(reverse_word(a))
