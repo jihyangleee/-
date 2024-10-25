@@ -1,62 +1,78 @@
 ## 1단계) 문제 분석
 
-
+<img width="752" alt="image" src="https://github.com/user-attachments/assets/5d6ffd9f-72b1-4233-933b-39a16bc9789b">
 
 
 1. 시간복잡도
 
-    " S의 길이는 100,000 이하이다." 라고 했기 때문에 1초 이내에 풀어야 한다면 O(nlogn)이하의 시간 복잡도가 걸리는 알고리즘으로 문제를 풀어야 한다. 
+    이 문제에서는 입력 크기(후위 표기식의 길이 𝐿) 에 따라 시간이 선형적으로 증가하기 때문에 𝑂(𝐿)의 시간 복잡도를 가진다. 최대 O(100)이 걸린다.  
 
 
 
 2. 제약 조건 분석
    
-    입력 조건에 s의 길이를 100.000이하로 적는다.
-    출력은 "첫째 줄에 문자열 S의 단어를 뒤집어서 출력한다."의 조건을 만족시킨다.
-    태그는 단어가 아니기 때문에 순서가 바뀌지 않는다.
-    
+     둘째 줄에는 후위 표기식이 주어진다. (여기서 피연산자는 A~Z의 영대문자이며, A부터 순서대로 N개의 영대문자만이 사용되며, 길이는 100을 넘지 않는다) 
+     계산 결과를 소숫점 둘째 자리까지 출력한다.
 
 ## 2단계) 접근 방식
 
 1. 생각 과정 설명(왜 이 자료구조/알고리즘을 선택했고, 어떻게 해결방법을 생각하게 되었는지 생각이 도달하는 과정을 설명)
 
-   
-    처음에는 스택이라는 자료구조를 이용해서 문제를 풀었다 그래서 append를 이용해서 문자열이 들어있는 리스트에 삽입한 후 특정 조건에 도달하면 그 앞에 있는 문자열들의 순서를 바꿔주는 형식으로 문제를 풀었다.
-    그러나 스택이라는 자료구조 하나만으로는 문제를 풀기가 어려워서 단순하게 생각하기 위해 '문자열의 순서를 바꾸는 문제'로 풀기로 하고 특정 조건을 만족하면 그 앞의 순서를 바꿔주고
-    아니면 그냥 순서를 바꾸지 않고 그대로 넣는 것으로 했다.   
+   스택이라는 자료구조를 이용하여 나중에 들어간 값이 먼저 나올 수 있도록 한다. 이를 후위계산식에 적용한 것인데 숫자를 만나면(알파벳) stack이라는 리스트에 넣고 만약 연산자를 만나면 하나씩 빼서 연산을 하도록 했다.
+   연산자인지 확인하는 함수, 연산을 시행해주는 함수를 구현하여 operation이라는 함수에서 호출했다. 스택을 이용하여 함수를 구현하는 거 까지는 괜찮았으나 알파벳을 숫자와 대응시키는 것이 힘들었다. 
+   이것의 해결방법은 다음과 같다. 알파벳의 갯수만큼을 for문을 돌려 해당 알파벳에 해당되는 숫자를 사용자로부터 받아온다. 그 뒤 operation함수에서 알파벳인지를 확인한후 알파벳이 맞다면 그것에 대응되는 숫자를 temp리스트에서 가져온다.
+      
 
 ## 3단계) 코드 설계
 ```python
-def reverse_word(user_input):
-    word = []  # 순서가 바뀌는 것들
-    result = []
-    is_stop = False  # 순서가 바뀔 수 없음을 예고
+def operation(user):
+    stack =[]
+    
+    
+    for j in user:
+        if j.isalpha():
+            stack.append(temp[ord(j)-ord('A')])
+            
+        elif j==" ":
+            continue
+        elif is_operator(j):
+            a= stack.pop()
+            b= stack.pop()        
+            c=operator(float(b),float(a),j)
+            stack.append(c)
+    return stack
+            
+def operator(a,b,j):
+    if j=="*":
+        return a*b
+    elif j =="+":
+        return a+b
+    elif j=="-":
+        return a-b
+    elif j=="/":
+        return a/b
+    elif j=="%":
+        return a%b
+    
+def is_operator(j):
+    a= "+-*/%"
+    if j in a:
+        return True
+    else:
+        return False
 
-    for selection in user_input:
-        if selection == "<":
-            if word:  # word에 어떤 수가 있음을 알려줌
-                result.append(''.join(word[::-1]))  # selection에 있는 문자가 실행되기 전에 앞에 있는 문자들의 순서를 바꿔준다.
-                word = []  # result에 보낸 뒤 그 문자 리스트를 비워준다.
-            result.append(selection)  # 그다음 selection을 result에 추가해준다.
-            is_stop = True  # 순서가 바뀔 수 없음 "<" 나왔기 때문
-        elif selection == ">":
-            result.append(selection)
-            is_stop = False  # 순서가 바뀔 수 있음
-        elif selection == " ":
-            if word:
-                result.append(''.join(word[::-1]))
-                word = []
-            result.append(selection)  # 공백도 추가가 가능하다. 공백 또한 하나의 기준이 될 수 있다.
-        elif not is_stop:  # 순서가 바뀔 수 있는 경우
-            word.append(selection)  # 순서를 바꿀 수 있는 리스트에 추가
-        else:
-            result.append(selection)  # "<"가 나온 뒤 ">" 표시가 아직 나오지 않은 경우에 순서를 바꿀 수 없을 때 result에 바로 추가한다.
 
-    if word:
-        result.append(''.join(word[::-1]))
 
-    result2 = ''.join(result)
-    return result2
+# 알파벳 개수 입력
+num = int(input())
 
-a = input()
-print(reverse_word(a))
+# 문자열 입력 
+user_input = list(input())
+temp = [0] *num
+for i in range(num):
+    temp[i]=int(input())
+
+
+
+for i in operation(user_input):
+    print(f"{i:.2f}")
